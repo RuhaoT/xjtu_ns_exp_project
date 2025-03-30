@@ -1,0 +1,18 @@
+# all pycache directories
+__pycache__/
+
+# all pyc files
+*.pyc
+
+# password config
+*pwd
+
+# server logs
+*.log
+
+# ssl certificates
+*.pem
+*.crt
+*.key
+*.csr
+
