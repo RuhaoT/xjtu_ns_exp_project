@@ -1,0 +1,97 @@
+HeaderBar {
+    height: 3;
+    width: 100%;
+    layout: grid;
+    grid-size: 2;
+    grid-columns: 25% 75%;
+    padding: 1 2;
+    background: red;
+    dock: top;
+}
+
+.left-aligned {
+    width: 500%;
+    text-align: left;
+    text-style: bold;
+    background: blue;
+}
+
+.right-aligned {
+    width: 100%;
+    text-align: right;
+    background: green;
+}
+
+# Before logging in, the login button is shown while the logout button is hidden
+#login-button {
+    # placeholder for login button
+    dock: bottom;
+}
+
+#logout-button {
+    # placeholder for logout button
+    dock: bottom;
+    visibility: hidden;
+}
+
+# After logging in, the login button is hidden while the logout button is shown
+.logged-in #login-button {
+    dock: bottom;
+    visibility: hidden;
+}
+.logged-in #logout-button {
+    dock: bottom;
+    visibility: visible;
+}
+
+# file selection list
+#file-selector-list{
+    width: 100%;
+    height: 100%;
+    background: yellow;
+    dock: left;
+}
+
+#file-selector{
+    width: 1fr;
+    height: 100%;
+}
+
+DashboardScreen {
+    background: white;
+}
+
+#dashboard-content {
+    width:2fr;
+    background: green;
+}
+
+#operation-panel {
+    width: 100%;
+    height: 2fr;
+    background: tan;
+}
+
+#operation-panel-2 {
+    width: 100%;
+    height: 1fr;
+    background: grey;
+}
+
+Switch {
+    height: auto;
+    width: auto;
+    dock: right;
+}
+
+SwitchableSetting {
+    height: 5;
+    background: lightgrey;
+    margin: 1;
+    padding: 1;
+}
+
+#login-status {
+    height: auto;
+    background: red;
+}

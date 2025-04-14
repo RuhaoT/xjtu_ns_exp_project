@@ -1,0 +1,89 @@
+from domain.authentication_model import Credentials, AuthResult, Session
+from domain.setting_model import Setting, DEFAULT_HTTP_REQUEST_TEMPLATE
+from domain.http_model import HTTPLayerInterfaceRequest, HTTPResponse, HTTPPayloadType,HTTPServerAddress, HTTPLayerInterfaceResponse
+from service.http_client import HttpClient, HttpClientSocket
+
+def encode_auth_form(credentials: Credentials) -> tuple[bytes, int]:
+    """Encode credentials into a form for authentication, also return the length of content before encoding."""
+    auth_form = {
+        "httpd_username": credentials.username,
+        "httpd_password": credentials.password,
+        "login": "Login",
+    }
+    
+    auth_form_str = "&".join(
+        f"{key}={value}" for key, value in auth_form.items()
+    )
+    
+    return auth_form_str.encode("utf-8"), len(auth_form_str)
+
+class AuthService:
+    """Service for authentication operations."""
+    
+    def __init__(self, http_client: HttpClientSocket, session_token: str = None):
+        self.http_client = http_client
+        self.session_token = session_token
+
+    async def login(self, credentials: Credentials, setting: Setting = None) -> AuthResult:
+        """Authenticate user with the server."""
+        try:
+            
+            if setting is None:
+                setting = Setting()
+                setting.http_request_template = DEFAULT_HTTP_REQUEST_TEMPLATE
+            
+            auth_request = setting.http_request_template
+            auth_request.url = setting.auth_service_url
+            auth_request.method = "POST"
+            auth_request.server_connection = HTTPServerAddress(
+                host_ip=credentials.server_address,
+                port=80,
+            )
+            auth_request.payload_type = HTTPPayloadType.FORM_URLENCODED
+            auth_request.payload_bytes, auth_request.content_length_before_encoding = encode_auth_form(credentials)
+            auth_request.user_agent = "Client by Ruhao Tian"
+            auth_request.allow_redirects = True
+            auth_request.maintain_session_during_redirects = True
+            
+            response = self.http_client.handle_request(auth_request)
+            
+            # Check response status
+            if response.vaild_response:
+                
+                if response.http_response.set_cookie != None:
+                    # Extract session token from cookies
+                    self.session_token = response.http_response.set_cookie.split(";")[0]
+                    return AuthResult(
+                        success=True,
+                        session_model=Session(session_token=self.session_token),
+                    )
+                else:
+                    if response.http_response.location == "/login.html":
+                        # Authentication failed
+                        return AuthResult(
+                            success=False,
+                            error_message="Authentication failed. Invalid username or password."
+                        )
+                    else:
+                        # Authentication failed for another reason
+                        return AuthResult(
+                            success=False,
+                            error_message="Authentication failed. Unknown error." + str(response.http_response)
+                        )
+            else:
+                # Handle invalid response
+                return AuthResult(
+                    success=False,
+                    error_message="Invalid response from server: " + str(response.error_message)
+                )
+                
+        except Exception as e:
+            # Handle network or other errors
+            return AuthResult(
+                success=False,
+                error_message=f"Error during authentication: {str(e)}"
+            )
+    
+    def is_authenticated(self) -> bool:
+        """Check if user is authenticated."""
+        return self.session_token is not None

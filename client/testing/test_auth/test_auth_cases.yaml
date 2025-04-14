@@ -1,0 +1,7 @@
+test_auth_login_minimal:
+  credentials:
+    server_address: "43.136.171.182"
+    username: "ruhao"
+    password: "ruhao"
+  expected:
+    success: true

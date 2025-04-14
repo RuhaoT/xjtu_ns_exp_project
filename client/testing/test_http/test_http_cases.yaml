@@ -1,0 +1,251 @@
+test_http_request_minimal:
+  url: /
+  method: GET
+  version: "HTTP/1.1"
+  host: "43.136.171.182"
+
+  connection_keep_alive: false
+  cookie: Null
+  user_agent: "TestClient/1.0"
+  accept: "*/*"
+  accept_encoding: Null
+
+  transfer_encoding: Null
+  transfer_encoding_chunk_size: Null
+  content_encoding: Null
+  payload_type: Null
+  payload_data: NULL
+
+  server_connection:
+    host_ip: 43.136.171.182
+    port: 80
+
+  timeout: 5
+  max_retries: 3
+  allow_redirects: False
+  max_redirects: 0
+  maintain_session_during_redirects: False
+
+  expected_response:
+    valid_response: true
+    status_code: 200
+
+test_http_request_form_login:
+  url: /login
+  method: POST
+  version: "HTTP/1.1"
+  host: "43.136.171.182"
+
+  connection_keep_alive: false
+  cookie: Null
+  user_agent: "TestClient/1.0"
+  accept: "*/*"
+  accept_encoding: Null
+
+  transfer_encoding: Null
+  transfer_encoding_chunk_size: Null
+  content_encoding: Null
+  payload_type: "application/x-www-form-urlencoded"
+  payload_data:
+    httpd_username: "ruhao"
+    httpd_password: "ruhao"
+    login: "Login"
+
+  server_connection:
+    host_ip: 43.136.171.182
+    port: 80
+
+  timeout: 5
+  max_retries: 3
+  allow_redirects: False
+  max_redirects: 0
+  maintain_session_during_redirects: False
+
+  expected_response:
+    valid_response: false # because redirect is not allowed
+    status_code: 302 # redirect to login success page
+    location: "/login_successful.html" # despite the redirect, a login success page is expected
+    error_message: "Redirection is needed, but not allowed"
+
+
+test_http_request_form_login_send_encoding:
+  url: /login
+  method: POST
+  version: "HTTP/1.1"
+  host: "43.136.171.182"
+
+  connection_keep_alive: false
+  cookie: Null
+  user_agent: "TestClient/1.0"
+  accept: "*/*"
+  accept_encoding: Null
+
+  transfer_encoding:
+    - NULL
+    - "chunked"
+    #- "identity"
+  transfer_encoding_chunk_size: 10
+  content_encoding:
+    - NULL
+    - "gzip"
+    - "identity"
+  payload_type: "application/x-www-form-urlencoded"
+  payload_data:
+    httpd_username: "ruhao"
+    httpd_password: "ruhao"
+    login: "Login"
+
+  server_connection:
+    host_ip: 43.136.171.182
+    port: 80
+
+  timeout: 5
+  max_retries: 3
+  allow_redirects: False
+  max_redirects: 0
+  maintain_session_during_redirects: False
+
+  expected_response:
+    valid_response: false # because redirect is not allowed
+    status_code: 302 # redirect to login success page
+    location: "/login_successful.html" # despite the redirect, a login success page is expected
+    error_message: "Redirection is needed, but not allowed"
+
+test_http_request_minimal_respond_encoding:
+  url: /
+  method: GET
+  version: "HTTP/1.1"
+  host: "43.136.171.182"
+
+  connection_keep_alive: false
+  cookie: Null
+  user_agent: "TestClient/1.0"
+  accept: "*/*"
+  accept_encoding:
+    - NULL
+    - "gzip"
+    - "identity"
+
+  transfer_encoding: Null
+  transfer_encoding_chunk_size: Null
+  content_encoding: Null
+  payload_type: Null
+  payload_data: Null
+
+  server_connection:
+    host_ip: 43.136.171.182
+    port: 80
+
+  timeout: 5
+  max_retries: 3
+  allow_redirects: False
+  max_redirects: 0
+  maintain_session_during_redirects: False
+
+  expected_response:
+    valid_response: true
+    status_code: 200
+
+test_http_request_form_login_with_redirection:
+  url: /login
+  method: POST
+  version: "HTTP/1.1"
+  host: "43.136.171.182"
+
+  connection_keep_alive: false
+  cookie: Null
+  user_agent: "TestClient/1.0"
+  accept: "*/*"
+  accept_encoding: Null
+
+  transfer_encoding: Null
+  transfer_encoding_chunk_size: Null
+  content_encoding: Null
+  payload_type: "application/x-www-form-urlencoded"
+  payload_data:
+    httpd_username: "ruhao"
+    httpd_password: "ruhao"
+    login: "Login"
+
+  server_connection:
+    host_ip: 43.136.171.182
+    port: 80
+
+  timeout: 5
+  max_retries: 3
+  allow_redirects: True
+  max_redirects: 10
+  maintain_session_during_redirects: True
+
+  expected_response:
+    valid_response: True # because redirect is not allowed
+    status_code: 200 # redirect to login success page
+    error_message: Null
+
+test_http_request_form_login_with_redirection_infinite:
+  url: /test/
+  method: POST
+  version: "HTTP/1.1"
+  host: "43.136.171.182"
+
+  connection_keep_alive: false
+  cookie: Null
+  user_agent: "TestClient/1.0"
+  accept: "*/*"
+  accept_encoding: Null
+
+  transfer_encoding: Null
+  transfer_encoding_chunk_size: Null
+  content_encoding: Null
+  payload_type: "application/x-www-form-urlencoded"
+  payload_data:
+    httpd_username: "ruhao"
+    httpd_password: "ruhao" # use a wrong password to trigger infinite redirection
+    login: "Login"
+
+  server_connection:
+    host_ip: 43.136.171.182
+    port: 80
+
+  timeout: 5
+  max_retries: 3
+  allow_redirects: True
+  max_redirects: 10
+  maintain_session_during_redirects: False
+
+  expected_response:
+    valid_response: False
+    error_message: "Max redirect count reached: 10"
+
+test_http_request_parse_url:
+  url: /~中
+  method: GET
+  version: "HTTP/1.1"
+  host: "43.136.171.182"
+
+  connection_keep_alive: false
+  cookie: Null
+  user_agent: "TestClient/1.0"
+  accept: "*/*"
+  accept_encoding: Null
+
+  transfer_encoding: Null
+  transfer_encoding_chunk_size: Null
+  content_encoding: Null
+  payload_type: Null
+  payload_data: Null
+
+  server_connection:
+    host_ip: 43.136.171.182
+    port: 80
+
+  timeout: 5
+  max_retries: 3
+  allow_redirects: False
+  max_redirects: 0
+  maintain_session_during_redirects: False
+
+  expected_response:
+    valid_response: true
+    status_code: 200
+    error_message: Null
