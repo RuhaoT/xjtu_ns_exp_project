@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+# NOTE: DEPRECATED
+
+#!/usr/bin/env python
 import cgi
 import os
 import sys
