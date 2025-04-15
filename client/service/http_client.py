@@ -8,6 +8,19 @@ import json, urllib.parse, gzip, zlib
 import select
 import re
 
+def handle_common_http_error(status_code: int) -> str:
+    """Handle common HTTP errors and return a user-friendly message."""
+    error_messages = {
+        400: "400 Bad Request: The server could not understand the request.",
+        401: "401 Unauthorized: Authentication is required.",
+        403: "403 Forbidden: You do not have permission to access this resource.",
+        404: "404 Not Found: The requested resource could not be found.",
+        500: "500 Internal Server Error: The server encountered an error.",
+        502: "502 Bad Gateway: The server received an invalid response from the upstream server.",
+        503: "503 Service Unavailable: The server is currently unable to handle the request.",
+    }
+    return error_messages.get(status_code, None)
+
 def parse_http_url(url: str) -> str:
     """Parse the HTTP URL and return the server address."""
     safe_or_reserved_characters = re.compile(r'[a-zA-Z0-9\-._~:/?#\[\]@!$&\'()*+,;=]')
@@ -158,7 +171,7 @@ class HttpClientSocket:
                 else:
                     # this guarantees that the response is 1. valid and 2. not a redirection
                     # but before returning, apply the last cookie
-                    if not response.http_response.set_cookie and last_cookie is not None:
+                    if (not response.http_response.set_cookie) and (last_cookie is not None) and (layer_request_interface.maintain_session_during_redirects):
                         print(f"Applying last cookie: {last_cookie}")
                         response.http_response.set_cookie = last_cookie
                     
@@ -340,7 +353,7 @@ class HttpClientSocket:
                         # Apply chunked transfer encoding
                         body_transfer_encoded = self._apply_chunked_transfer_encoding(body_content_encoded, max_chunk_size=encoding_interface.transfer_encoding_chunk_size)
                     case _:
-                        raise ValueError("Unsupported transfer encoding")
+                        raise ValueError(f"Unsupported transfer encoding: {encoding_interface.transfer_encoding}")
                     # TODO: at least add chunked
                 
                 # update content length
@@ -393,6 +406,34 @@ class HttpClientSocket:
         # add the final chunk
         chunked_data += b"0\r\n\r\n"
         return chunked_data
+    
+    def _decode_chunked_transfer_encoding(self, data: bytes) -> bytes:
+        """Decode chunked transfer encoding."""
+        decoded_data = b''
+        offset = 0
+        while offset < len(data):
+            # Find the end of the chunk size line
+            end_of_chunk_size = data.find(b'\r\n', offset)
+            if end_of_chunk_size == -1:
+                raise ValueError("Invalid chunked data: missing chunk size end")
+            
+            # Get the chunk size
+            chunk_size_hex = data[offset:end_of_chunk_size]
+            chunk_size = int(chunk_size_hex, 16)
+            offset = end_of_chunk_size + 2
+            
+            # If chunk size is 0, break the loop
+            if chunk_size == 0:
+                break
+            
+            # Get the chunk data
+            chunk_data = data[offset:offset + chunk_size]
+            decoded_data += chunk_data
+            
+            # Move to the next chunk
+            offset += chunk_size + 2
+        
+        return decoded_data
     
     def _check_persistent_socket(self, transmission_interface: HTTPLayerTransmissionModuleInterface) -> bool:
         """Check if the persistent socket is still valid."""
@@ -567,10 +608,13 @@ class HttpClientSocket:
             # first decode transfer encoding
             if decoded_response.transfer_encoding != None:
                 match decoded_response.transfer_encoding:
-                    case 'identity':
+                    case HTTPTransferEncoding.IDENTITY:
                         body_after_transfer_decoded = body
+                    case HTTPTransferEncoding.CHUNKED:
+                        print("Decoding chunked transfer encoding")
+                        body_after_transfer_decoded = self._decode_chunked_transfer_encoding(body)
                     case _:
-                        raise ValueError("Unsupported transfer encoding")
+                        raise ValueError(f"Unsupported transfer encoding: {decoded_response.transfer_encoding}")
                     # TODO: add chunked transfer encoding support
             else:
                 body_after_transfer_decoded = body

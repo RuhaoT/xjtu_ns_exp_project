@@ -16,7 +16,7 @@ class Credentials:
 class Session:
     """User session model."""
     session_token: str = None
-    server: HTTPServerAddress = None
+    session_server_info: HTTPServerAddress = None
     # user_name: str
 
 

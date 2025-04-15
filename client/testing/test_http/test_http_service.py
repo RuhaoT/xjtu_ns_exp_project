@@ -2,7 +2,7 @@ import pytest
 from service.http_client import HttpClientSocket
 from domain.http_model import HTTPLayerInterfaceRequest, HTTPLayerInterfaceResponse, HTTPServerAddress, HTTPPayloadType, HTTPTransferEncoding, HTTPContentEncoding
 from service.authentication import encode_auth_form
-from domain.authentication_model import Credentials, AuthResult
+from domain.authentication_model import Credentials, AuthResult, Session
 from httpx import Response
 import yaml
 import itertools

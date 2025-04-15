@@ -1,21 +1,25 @@
 from domain.authentication_model import Credentials, AuthResult, Session
 from domain.setting_model import Setting, DEFAULT_HTTP_REQUEST_TEMPLATE
 from domain.http_model import HTTPLayerInterfaceRequest, HTTPResponse, HTTPPayloadType,HTTPServerAddress, HTTPLayerInterfaceResponse
-from service.http_client import HttpClient, HttpClientSocket
+from service.http_client import HttpClient, HttpClientSocket, handle_common_http_error
+from dataclasses import replace
 
 def encode_auth_form(credentials: Credentials) -> tuple[bytes, int]:
     """Encode credentials into a form for authentication, also return the length of content before encoding."""
-    auth_form = {
-        "httpd_username": credentials.username,
-        "httpd_password": credentials.password,
-        "login": "Login",
-    }
-    
-    auth_form_str = "&".join(
-        f"{key}={value}" for key, value in auth_form.items()
-    )
-    
-    return auth_form_str.encode("utf-8"), len(auth_form_str)
+    try:
+        auth_form = {
+            "httpd_username": credentials.username,
+            "httpd_password": credentials.password,
+            "login": "Login",
+        }
+
+        auth_form_str = "&".join(
+            f"{key}={value}" for key, value in auth_form.items()
+        )
+
+        return auth_form_str.encode("utf-8"), len(auth_form_str)
+    except Exception as e:
+        raise ValueError(f"Error encoding authentication form: {str(e)}")
 
 class AuthService:
     """Service for authentication operations."""
@@ -29,19 +33,19 @@ class AuthService:
         try:
             
             if setting is None:
-                setting = Setting()
+                setting = replace(Setting())
                 setting.http_request_template = DEFAULT_HTTP_REQUEST_TEMPLATE
             
-            auth_request = setting.http_request_template
-            auth_request.url = setting.auth_service_url
-            auth_request.method = "POST"
-            auth_request.server_connection = HTTPServerAddress(
+            server_info = HTTPServerAddress(
                 host_ip=credentials.server_address,
                 port=80,
             )
+            auth_request = replace(setting.http_request_template)
+            auth_request.url = setting.auth_service_url
+            auth_request.method = "POST"
+            auth_request.server_connection = server_info
             auth_request.payload_type = HTTPPayloadType.FORM_URLENCODED
             auth_request.payload_bytes, auth_request.content_length_before_encoding = encode_auth_form(credentials)
-            auth_request.user_agent = "Client by Ruhao Tian"
             auth_request.allow_redirects = True
             auth_request.maintain_session_during_redirects = True
             
@@ -55,7 +59,7 @@ class AuthService:
                     self.session_token = response.http_response.set_cookie.split(";")[0]
                     return AuthResult(
                         success=True,
-                        session_model=Session(session_token=self.session_token),
+                        session_model=Session(session_token=self.session_token, session_server_info=server_info),
                     )
                 else:
                     if response.http_response.location == "/login.html":
@@ -65,10 +69,14 @@ class AuthService:
                             error_message="Authentication failed. Invalid username or password."
                         )
                     else:
+                        # check status code
+                        error_message = handle_common_http_error(response.http_response.status_code)
+                        if error_message == None:
+                            error_message = "Unknown error"
                         # Authentication failed for another reason
                         return AuthResult(
                             success=False,
-                            error_message="Authentication failed. Unknown error." + str(response.http_response)
+                            error_message="Authentication failed." + error_message
                         )
             else:
                 # Handle invalid response
