@@ -3,39 +3,35 @@ HeaderBar {
     width: 100%;
     layout: grid;
     grid-size: 2;
-    grid-columns: 50% 50%;
+    grid-columns: 25% 75%;
     padding: 1 2;
-    background: $background;
+    background: red;
     dock: top;
 }
 
 .left-aligned {
-    width: 100%;
+    width: 500%;
     text-align: left;
-    text-style: reverse;
-    color: $success;
+    text-style: bold;
+    background: blue;
 }
 
 .right-aligned {
     width: 100%;
     text-align: right;
-    text-style: bold;
+    background: green;
 }
 
 # Before logging in, the login button is shown while the logout button is hidden
 #login-button {
     # placeholder for login button
     dock: bottom;
-    border: $primary;
-    background: $primary;
 }
 
 #logout-button {
     # placeholder for logout button
     dock: bottom;
     visibility: hidden;
-    border: $error;
-    background: $error;
 }
 
 # After logging in, the login button is hidden while the logout button is shown
@@ -52,7 +48,7 @@ HeaderBar {
 #file-selector-list{
     width: 100%;
     height: 100%;
-    background: $background;
+    background: yellow;
     dock: left;
 }
 
@@ -60,13 +56,12 @@ HeaderBar {
     width: 1fr;
     height: 100%;
     margin: 0 0;
-    border: $primary round;
+    border: $error;
     border-title-align: left;
-    background: $background;
 }
 
 DashboardScreen {
-    background: $background;
+    background: white;
 }
 
 #dashboard-content {
@@ -77,17 +72,17 @@ DashboardScreen {
 #file-viewer {
     width: 100%;
     height: 1fr;
-    background: $background;
+    background: tan;
     padding: 0 0;
-    border: $primary round;
+    border: $error;
     border-title-align: right;
 }
 
 #operation-panel-2 {
     width: 100%;
     height: 1fr;
-    background: $background;
-    border: $primary round;
+    background: grey;
+    border: $error;
     border-title-align: right;
 }
 
@@ -100,45 +95,26 @@ DashboardScreen {
 }
 
 #operation-panel-2 #upload-hint {
-    background: $accent-muted;
-    color: $text-accent;
+    background: $error;
     margin: 0 0;
     padding: 0 1;
 }
 
 #operation-panel-2 #status-hint {
-    background: $accent-muted;
-    color: $text-accent;
+    background: $error;
     padding: 0 1;
 }
 
 #operation-panel-2 #panel-status {
     width: 1fr;
     height: 1fr;
-    border: $primary-muted;
-    color: $warning;
+    border: $error;
 }
 
 
-OperationPanel #download-button {
-    border: $primary;
-    background: $primary;
-}
-
-OperationPanel #upload-button {
-    border: $primary;
-    background: $primary;
-}
-
-OperationPanel #refresh-button {
-    border: $surface;
-    background: $surface;
-}
-
-OperationPanel #view-button {
-    border: $success;
-    background: $success;
-    color: $background;
+OperationPanel Button {
+    border: $error;
+    background: $error;
 }
 
 Switch {
@@ -156,9 +132,6 @@ SwitchableSetting {
 
 FileViewer #current-file-name{
     height: auto;
-    color: $text-accent;
-    background: $accent-muted;
-    text-align: center;
 }
 
 #file-viewer-text-area{
@@ -166,15 +139,14 @@ FileViewer #current-file-name{
 }
 
 LoginScreen #login-screen-outer-vertical {
-    border: $primary round;
+    border: $error;
 }
 
 LoginScreen Static {
-    background: $background;
+    background: $error;
 }
 
 #login-status {
     height: auto;
-    border: $primary-muted;
-    color: $warning;
+    border: $error;
 }

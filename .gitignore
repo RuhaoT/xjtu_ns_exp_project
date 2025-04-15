@@ -13,6 +13,12 @@ __pycache__/
 # server logs
 *.log
 
+# server files
+server/doc_root/test_file_service/*
+
+# client files
+client/local_files/*
+
 # ssl certificates
 *.pem
 *.crt

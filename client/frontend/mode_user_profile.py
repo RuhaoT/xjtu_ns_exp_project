@@ -1,12 +1,16 @@
-from textual.app import App, ComposeResult
-from textual.containers import Container, Horizontal, Grid, Vertical
-from textual.screen import ModalScreen, Screen
-from textual.widgets import Button, Footer, Header, Static, Input, SelectionList
-from textual.widgets.selection_list import Selection
-from frontend.utils import HeaderBar, DynamicText
-from domain.authentication_model import Credentials, AuthResult
-from textual.reactive import reactive
+from dataclasses import replace
+
+from domain.authentication_model import AuthResult, Credentials
+from frontend.utils import DynamicText, HeaderBar
 from service.authentication import AuthService
+from textual.app import App, ComposeResult
+from textual.containers import Container, Grid, Horizontal, Vertical
+from textual.reactive import reactive
+from textual.screen import ModalScreen, Screen
+from textual.widgets import (Button, Footer, Header, Input, SelectionList,
+                             Static)
+from textual.widgets.selection_list import Selection
+
 
 class LoginScreen(Screen):
     """A login widget. For now use static text as a placeholder.
@@ -30,19 +34,19 @@ class LoginScreen(Screen):
 
     def compose(self) -> ComposeResult:
         """Compose the login widget."""
-        with Vertical():
-            yield HeaderBar("Test", "Client Login")
+        yield HeaderBar("XJTU NETWORK LAB 2025 CLIENT SERVER", "Client Login")
+        with Vertical(id="login-screen-outer-vertical"):
 
             # main login component
-            yield Static("Server Address")
+            yield Static("Server Address", id="server-address")
             self.server_input = Input(placeholder="Enter server address", id="server-input")
             yield self.server_input
             
-            yield Static("Username")
+            yield Static("Username", id="username")
             self.username_input = Input(placeholder="Enter username", id="username-input")
             yield self.username_input
             
-            yield Static("Password")
+            yield Static("Password", id="password")
             self.password_input = Input(placeholder="Enter password", password=False, id="password-input")
             yield self.password_input
             
@@ -55,7 +59,7 @@ class LoginScreen(Screen):
                 yield Button("Login", id="login-button", classes="login-button")
                 yield Button("Logout", id="logout-button", classes="logout-button")
 
-            yield Footer()
+        yield Footer()
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button presses."""
@@ -80,17 +84,18 @@ class LoginScreen(Screen):
             
             # Perform login operation
             auth_service: AuthService = self.app.auth_service
-            result = await auth_service.login(credential)
+            result = await auth_service.login(credential, setting=self.app.current_setting)
             if result.success:
                 self.add_class("logged-in")
-                # self.app.session_token = result.session_token
-                self.login_status.text = "Logged in successfully"
+                # update current session
+                self.app.current_session = replace(result.session_model)
+                self.login_status.text = f"Login successful, got session: \n{self.app.current_session}"
             else:
                 self.login_status.text = "Login failed: " + (result.error_message or "Unknown error")
                 return
 
         elif event.button.id == "logout-button":
-            # clear session token and remove logged-in class
-            self.app.session_token = None
+            # clear session and remove logged-in class
+            self.app.current_session = None
             self.login_status.text = "Not logged in"
             self.remove_class("logged-in")

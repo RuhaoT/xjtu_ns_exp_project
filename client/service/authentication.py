@@ -1,8 +1,13 @@
-from domain.authentication_model import Credentials, AuthResult, Session
-from domain.setting_model import Setting, DEFAULT_HTTP_REQUEST_TEMPLATE
-from domain.http_model import HTTPLayerInterfaceRequest, HTTPResponse, HTTPPayloadType,HTTPServerAddress, HTTPLayerInterfaceResponse
-from service.http_client import HttpClient, HttpClientSocket, handle_common_http_error
 from dataclasses import replace
+
+from domain.authentication_model import AuthResult, Credentials, Session
+from domain.http_model import (HTTPLayerInterfaceRequest,
+                               HTTPLayerInterfaceResponse, HTTPPayloadType,
+                               HTTPResponse, HTTPServerAddress)
+from domain.setting_model import DEFAULT_HTTP_REQUEST_TEMPLATE, Setting
+from service.http_client import (HttpClientSocket,
+                                 handle_common_http_error)
+
 
 def encode_auth_form(credentials: Credentials) -> tuple[bytes, int]:
     """Encode credentials into a form for authentication, also return the length of content before encoding."""
@@ -56,7 +61,7 @@ class AuthService:
                 
                 if response.http_response.set_cookie != None:
                     # Extract session token from cookies
-                    self.session_token = response.http_response.set_cookie.split(";")[0]
+                    self.session_token = response.http_response.set_cookie
                     return AuthResult(
                         success=True,
                         session_model=Session(session_token=self.session_token, session_server_info=server_info),
@@ -71,8 +76,15 @@ class AuthService:
                     else:
                         # check status code
                         error_message = handle_common_http_error(response.http_response.status_code)
-                        if error_message == None:
-                            error_message = "Unknown error"
+                        # in this specific case, if the auth info is invalid, the server will always redirect to the login page, until the maximum number of redirects is reached
+                        # TODO: better handle this case
+                        if response.http_response.payload_bytes != None:
+                            error_message = "Invalid username or password."
+                        elif error_message == None:
+                            error_message = f"Unknown error occurred, status code: {response.http_response}"
+                        else:
+                            pass
+                            
                         # Authentication failed for another reason
                         return AuthResult(
                             success=False,

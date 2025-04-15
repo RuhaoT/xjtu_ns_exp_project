@@ -29,5 +29,6 @@ class Setting:
     
     auth_service_url: str = "/login"
     file_service_url: str = "/file_service"
-    local_file_dir: str = "./non-exist_dir"
-    upload_file_dir: str = "./non-exist_dir"
+    
+    local_file_dir: str = "./local_files/"
+    # upload_file_dir: str = "./non-exist_dir"

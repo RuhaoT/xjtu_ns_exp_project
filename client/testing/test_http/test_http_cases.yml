@@ -1,12 +1,19 @@
+variables:
+- server_ip: &server_ip 
+- server_host: &server_host 
+- custom_user_agent: &user_agent "TestClient/1.0_by_Ruhao_Tian"
+- custom_user_name: &username "ruhao"
+- custom_user_password: &userpassword 
+
 test_http_request_minimal:
   url: /
   method: GET
   version: "HTTP/1.1"
-  host: "43.136.171.182"
+  host: *server_host
 
   connection_keep_alive: false
   cookie: Null
-  user_agent: "TestClient/1.0"
+  user_agent: *user_agent
   accept: "*/*"
   accept_encoding: Null
 
@@ -17,7 +24,7 @@ test_http_request_minimal:
   payload_data: NULL
 
   server_connection:
-    host_ip: 43.136.171.182
+    host_ip: *server_ip
     port: 80
 
   timeout: 5
@@ -34,11 +41,11 @@ test_http_request_form_login:
   url: /login
   method: POST
   version: "HTTP/1.1"
-  host: "43.136.171.182"
+  host: *server_host
 
   connection_keep_alive: false
   cookie: Null
-  user_agent: "TestClient/1.0"
+  user_agent: *user_agent
   accept: "*/*"
   accept_encoding: Null
 
@@ -47,12 +54,12 @@ test_http_request_form_login:
   content_encoding: Null
   payload_type: "application/x-www-form-urlencoded"
   payload_data:
-    httpd_username: "ruhao"
-    httpd_password: "ruhao"
+    httpd_username: *username
+    httpd_password: *userpassword
     login: "Login"
 
   server_connection:
-    host_ip: 43.136.171.182
+    host_ip: *server_ip
     port: 80
 
   timeout: 5
@@ -72,11 +79,11 @@ test_http_request_form_login_send_encoding:
   url: /login
   method: POST
   version: "HTTP/1.1"
-  host: "43.136.171.182"
+  host: *server_host
 
   connection_keep_alive: false
   cookie: Null
-  user_agent: "TestClient/1.0"
+  user_agent: *user_agent
   accept: "*/*"
   accept_encoding: Null
 
@@ -91,12 +98,12 @@ test_http_request_form_login_send_encoding:
     - "identity"
   payload_type: "application/x-www-form-urlencoded"
   payload_data:
-    httpd_username: "ruhao"
-    httpd_password: "ruhao"
+    httpd_username: *username
+    httpd_password: *userpassword
     login: "Login"
 
   server_connection:
-    host_ip: 43.136.171.182
+    host_ip: *server_ip
     port: 80
 
   timeout: 5
@@ -115,11 +122,11 @@ test_http_request_minimal_respond_encoding:
   url: /
   method: GET
   version: "HTTP/1.1"
-  host: "43.136.171.182"
+  host: *server_host
 
   connection_keep_alive: false
   cookie: Null
-  user_agent: "TestClient/1.0"
+  user_agent: *user_agent
   accept: "*/*"
   accept_encoding:
     - NULL
@@ -133,7 +140,7 @@ test_http_request_minimal_respond_encoding:
   payload_data: Null
 
   server_connection:
-    host_ip: 43.136.171.182
+    host_ip: *server_ip
     port: 80
 
   timeout: 5
@@ -150,11 +157,11 @@ test_http_request_form_login_with_redirection:
   url: /login
   method: POST
   version: "HTTP/1.1"
-  host: "43.136.171.182"
+  host: *server_host
 
   connection_keep_alive: false
   cookie: Null
-  user_agent: "TestClient/1.0"
+  user_agent: *user_agent
   accept: "*/*"
   accept_encoding: Null
 
@@ -163,12 +170,12 @@ test_http_request_form_login_with_redirection:
   content_encoding: Null
   payload_type: "application/x-www-form-urlencoded"
   payload_data:
-    httpd_username: "ruhao"
-    httpd_password: "ruhao"
+    httpd_username: *username
+    httpd_password: *userpassword
     login: "Login"
 
   server_connection:
-    host_ip: 43.136.171.182
+    host_ip: *server_ip
     port: 80
 
   timeout: 5
@@ -186,11 +193,11 @@ test_http_request_form_login_with_redirection_infinite:
   url: /test/
   method: POST
   version: "HTTP/1.1"
-  host: "43.136.171.182"
+  host: *server_host
 
   connection_keep_alive: false
   cookie: Null
-  user_agent: "TestClient/1.0"
+  user_agent: *user_agent
   accept: "*/*"
   accept_encoding: Null
 
@@ -199,12 +206,12 @@ test_http_request_form_login_with_redirection_infinite:
   content_encoding: Null
   payload_type: "application/x-www-form-urlencoded"
   payload_data:
-    httpd_username: "ruhao"
-    httpd_password: "ruhao" # use a wrong password to trigger infinite redirection
+    httpd_username: *username
+    httpd_password: *userpassword # use a wrong password to trigger infinite redirection
     login: "Login"
 
   server_connection:
-    host_ip: 43.136.171.182
+    host_ip: *server_ip
     port: 80
 
   timeout: 5
@@ -221,11 +228,11 @@ test_http_request_parse_url:
   url: /~中
   method: GET
   version: "HTTP/1.1"
-  host: "43.136.171.182"
+  host: *server_host
 
   connection_keep_alive: false
   cookie: Null
-  user_agent: "TestClient/1.0"
+  user_agent: *user_agent
   accept: "*/*"
   accept_encoding: Null
 
@@ -236,7 +243,7 @@ test_http_request_parse_url:
   payload_data: Null
 
   server_connection:
-    host_ip: 43.136.171.182
+    host_ip: *server_ip
     port: 80
 
   timeout: 5

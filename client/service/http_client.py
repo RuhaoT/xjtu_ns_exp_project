@@ -1,12 +1,24 @@
-import httpx
-from typing import Dict, Any, Optional, Tuple
-from base64 import b64encode
-import socket
-from domain.http_model import HTTPLayerEncodingModuleInterface, HTTPMethod, HTTPPayloadType, HTTPLayerTransmissionModuleInterface, HTTPResponse, HTTPConnectionConfigurations, HTTPLayerInterfaceRequest, HTTPLayerDecodingModuleInterface, HTTPLayerInterfaceResponse, HTTPServerAddress, HTTPTransferEncoding, HTTPContentEncoding
-import time
-import json, urllib.parse, gzip, zlib
-import select
+import gzip
+import json
 import re
+import select
+import socket
+import time
+import urllib.parse
+import zlib
+from base64 import b64encode
+from typing import Any, Dict, Optional, Tuple
+
+from domain.http_model import (HTTPConnectionConfigurations,
+                               HTTPContentEncoding,
+                               HTTPLayerDecodingModuleInterface,
+                               HTTPLayerEncodingModuleInterface,
+                               HTTPLayerInterfaceRequest,
+                               HTTPLayerInterfaceResponse,
+                               HTTPLayerTransmissionModuleInterface,
+                               HTTPMethod, HTTPPayloadType, HTTPResponse,
+                               HTTPServerAddress, HTTPTransferEncoding)
+
 
 def handle_common_http_error(status_code: int) -> str:
     """Handle common HTTP errors and return a user-friendly message."""
@@ -57,48 +69,48 @@ def get_http_main_content_type(content_type: str) -> str:
         return content_type.split(';')[0].strip()
     return None
 
-class HttpClient:
-    """HTTP client for making requests to the server."""
+# class HttpClient:
+#     """HTTP client for making requests to the server."""
     
-    def __init__(self):
-        self.client = httpx.AsyncClient()
-        self.cookies = {}
+#     def __init__(self):
+#         self.client = httpx.AsyncClient()
+#         self.cookies = {}
     
-    async def get(self, url: str, headers: Optional[Dict[str, str]] = None, auth: Tuple[str, str] = None) -> httpx.Response:
-        """Make a GET request."""
-        return await self.client.get(url, auth=auth)
+#     async def get(self, url: str, headers: Optional[Dict[str, str]] = None, auth: Tuple[str, str] = None) -> httpx.Response:
+#         """Make a GET request."""
+#         return await self.client.get(url, auth=auth)
     
-    async def post(self, url: str, data: Any = None, headers: Optional[Dict[str, str]] = None, auth: Tuple[str,str] = None) -> httpx.Response:
-        """Make a POST request."""
+#     async def post(self, url: str, data: Any = None, headers: Optional[Dict[str, str]] = None, auth: Tuple[str,str] = None) -> httpx.Response:
+#         """Make a POST request."""
         
-        if headers is None:
-            headers = {}
+#         if headers is None:
+#             headers = {}
         
-        if auth:
-            # If auth is provided, set the Authorization header for Basic Auth
-            auth_header = f"Basic {b64encode(f'{auth[0]}:{auth[1]}'.encode()).decode()}"
-            headers['Authorization'] = auth_header
+#         if auth:
+#             # If auth is provided, set the Authorization header for Basic Auth
+#             auth_header = f"Basic {b64encode(f'{auth[0]}:{auth[1]}'.encode()).decode()}"
+#             headers['Authorization'] = auth_header
         
-        # If data is provided, send it as JSON
-        if data is not None:
-            headers['Content-Type'] = 'application/json'
-            response = await self.client.post(url, json=data, headers=headers, cookies=self.cookies)
-        else:
-            # If no data is provided, send an empty POST request
-            headers['Content-Type'] = 'application/x-www-form-urlencoded'
+#         # If data is provided, send it as JSON
+#         if data is not None:
+#             headers['Content-Type'] = 'application/json'
+#             response = await self.client.post(url, json=data, headers=headers, cookies=self.cookies)
+#         else:
+#             # If no data is provided, send an empty POST request
+#             headers['Content-Type'] = 'application/x-www-form-urlencoded'
         
         
-        response = await self.client.post(url, headers=headers, cookies=self.cookies)
+#         response = await self.client.post(url, headers=headers, cookies=self.cookies)
         
-        # Store cookies for session management
-        if response.cookies:
-            self.cookies.update(response.cookies)
+#         # Store cookies for session management
+#         if response.cookies:
+#             self.cookies.update(response.cookies)
             
-        return response
+#         return response
     
-    async def close(self):
-        """Close the HTTP client."""
-        await self.client.aclose()
+#     async def close(self):
+#         """Close the HTTP client."""
+#         await self.client.aclose()
 
 class HttpClientSocket:
     """HTTP client with low-level implementation for socket communication."""

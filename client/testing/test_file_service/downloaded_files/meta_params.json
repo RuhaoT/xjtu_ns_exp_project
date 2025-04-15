@@ -1,0 +1,99 @@
+{
+    "config_file": "config/forest_setting.ini",
+    "normalization_config": {
+        "visual_signal_normalization": [
+            [
+                0.3537,
+                0.3537,
+                0.3537
+            ],
+            [
+                0.3466,
+                0.3466,
+                0.3466
+            ]
+        ],
+        "w_cnn_pixel_normalization": [
+            true
+        ],
+        "cnn_pixel_mean_tensor_path": "/root/autodl-tmp/rht/BTSP_task4_neurogpr/data/norm_tensor_forest"
+    },
+    "enable_modalities": [
+        [
+            "fps",
+            "gps",
+            "head",
+            "time"
+        ]
+    ],
+    "enable_cnn_wta": [
+        true
+    ],
+    "cnn_wta_ratio": [
+        0.25
+    ],
+    "post_preprocessing_config": {
+        "modality_scale_factor": [
+            [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                1.0
+            ]
+        ]
+    },
+    "binary_btsp": [
+        false
+    ],
+    "temporal_input_config": {
+        "spike_train_sample_length": 3,
+        "temporal_dimension_handling": [
+            "flatten"
+        ]
+    },
+    "hash_ratio": [
+        1.5
+    ],
+    "fw": [
+        0.6
+    ],
+    "wta_ratio": [
+        0.01
+    ],
+    "fq_constant": [
+        0.01
+    ],
+    "fast_btsp": true,
+    "train_exp_idx": [
+        "1"
+    ],
+    "test_exp_idx": [
+        "2",
+        "2",
+        "2",
+        "2",
+        "2"
+    ],
+    "partial_train": false,
+    "training_proportion": [
+        1.0
+    ],
+    "partial_test": [
+        false
+    ],
+    "train_batch_size": 192,
+    "test_batch_size": 256,
+    "worker_per_data_loader": 6,
+    "redis_config": {
+        "redis_host": "localhost",
+        "redis_port": 6379,
+        "redis_db_num": 0
+    },
+    "preload_list": [
+        1,
+        2
+    ],
+    "experiment_index": 0,
+    "experiment_name": "mission5_btsp_test3_forest_setting_verif"
+}

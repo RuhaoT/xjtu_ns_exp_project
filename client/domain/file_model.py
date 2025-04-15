@@ -12,6 +12,13 @@ class FileServerRequestType(StrEnum):
     LIST_FILES = "list_files"
     DOWNLOAD_FILE = "download_file"
     UPLOAD_FILE = "upload_file"
+    
+class DirectViewFileType(StrEnum):
+    """Enumeration for direct view file types."""
+    TXT = "txt"
+    INI = "ini"
+    JSON = "json"
+    MARKDOWN = "md"
 
 @dataclass
 class SingleFile:
@@ -52,7 +59,7 @@ class FileDownloadResult:
 @dataclass
 class FileUploadInterface:
     """The upload interface the file service provides to upper layers."""
-    file_name_list: list[str] = None
+    file_path_or_file_dir_path: str = None
     current_session: Session = None
     setting: Setting = None
 
@@ -62,6 +69,7 @@ class FileUploadResult:
     upload_success: bool = False
     error_message: Optional[str] = None
     uploaded_file_name_list: list[str] = None
+    already_uploaded_file_name_list: Optional[list[str]] = None
     
 @dataclass
 class FileServerRequestAPI:

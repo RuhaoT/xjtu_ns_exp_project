@@ -1,10 +1,12 @@
 from textual.app import App, ComposeResult
-from textual.containers import Container, Horizontal, Grid, Vertical
-from textual.screen import ModalScreen, Screen
-from textual.widgets import Button, Footer, Header, Static, Input, SelectionList
-from textual.widgets.selection_list import Selection
-from textual.widget import Widget
+from textual.containers import Container, Grid, Horizontal, Vertical
 from textual.reactive import reactive
+from textual.screen import ModalScreen, Screen
+from textual.widget import Widget
+from textual.widgets import (Button, Footer, Header, Input, SelectionList,
+                             Static)
+from textual.widgets.selection_list import Selection
+
 
 class HeaderBar(Static):
     """A custom header bar with content aligned to left and right."""

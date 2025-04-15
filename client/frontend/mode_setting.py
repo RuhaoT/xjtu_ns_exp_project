@@ -1,9 +1,12 @@
-from textual.app import App, ComposeResult
-from textual.containers import Container, Horizontal, Grid, Vertical, VerticalScroll, HorizontalGroup
-from textual.screen import ModalScreen, Screen
-from textual.widgets import Button, Footer, Header, Static, Input, SelectionList, Switch
-from textual.widgets.selection_list import Selection
 from frontend.utils import HeaderBar
+from textual.app import App, ComposeResult
+from textual.containers import (Container, Grid, Horizontal, HorizontalGroup,
+                                Vertical, VerticalScroll)
+from textual.screen import ModalScreen, Screen
+from textual.widgets import (Button, Footer, Header, Input, SelectionList,
+                             Static, Switch)
+from textual.widgets.selection_list import Selection
+
 
 class SwitchableSetting(HorizontalGroup):
     
@@ -29,21 +32,21 @@ class SettingsScreen(Screen):
         """Compose the settings screen."""
 
         # header & footer
-        yield HeaderBar("Test", "Client Settings")
+        yield HeaderBar("XJTU NETWORK LAB 2025 CLIENT SERVER", "Client Settings")
         yield Footer()
 
-        yield Static("Settings Screen", classes="settings-screen")
-        yield Button("Save", classes="settings-button", id="save-button")
-        yield Button("Cancel", classes="settings-button", id="cancel-button")
+        yield Static("Settings Screen TBD...", classes="settings-screen")
+        # yield Button("Save", classes="settings-button", id="save-button")
+        # yield Button("Cancel", classes="settings-button", id="cancel-button")
         
-        # Create a vertical scroll container for settings
-        yield VerticalScroll(SwitchableSetting("Enable Notifications", "on", "notifications", "setting-item"),
-            SwitchableSetting("Dark Mode", "off", "dark-mode", "setting-item"),
-            SwitchableSetting("Auto Save", "on", "auto-save", "setting-item"),
-            SwitchableSetting("Show Line Numbers", "off", "line-numbers", "setting-item"),
-            SwitchableSetting("Enable Sounds", "on", "sounds", "setting-item"),
-            SwitchableSetting("Language", "English", "language", "setting-item"),
-        )
+        # # Create a vertical scroll container for settings
+        # yield VerticalScroll(SwitchableSetting("Enable Notifications", "on", "notifications", "setting-item"),
+        #     SwitchableSetting("Dark Mode", "off", "dark-mode", "setting-item"),
+        #     SwitchableSetting("Auto Save", "on", "auto-save", "setting-item"),
+        #     SwitchableSetting("Show Line Numbers", "off", "line-numbers", "setting-item"),
+        #     SwitchableSetting("Enable Sounds", "on", "sounds", "setting-item"),
+        #     SwitchableSetting("Language", "English", "language", "setting-item"),
+        # )
             
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
