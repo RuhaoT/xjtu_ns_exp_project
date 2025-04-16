@@ -374,8 +374,9 @@ class HttpClientSocket:
                 # No transfer encoding applied
                 body_transfer_encoded = body_content_encoded
             
-            # Add content length header
-            headers += f"Content-Length: {content_length}\r\n"
+            # Add content length header if no transfer encoding is applied
+            if encoding_interface.transfer_encoding == None:
+                headers += f"Content-Length: {content_length}\r\n"
         
         # wrapping up the request
         headers += "\r\n"
